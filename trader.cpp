@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <algorithm>
 #include "sort.h"
 #include "Binaries.h"
 
@@ -22,11 +23,22 @@ void popRandomElement(std::vector<T>& vec, int randomIndex) {
         vec.resize(vec.size() - 1);
 }
 
-bool cancellation_predictor(vector<int>order_numbers,vector<string>orders){
-    string current_order = orders[order_numbers.back()].substr(0,orders[order_numbers.back()].size()-1);
+bool cancellation_predictor(vector<int>order_numbers,vector<string>orders, vector<int> Priceperstock, vector<char> type){
+    string back;
+    if(type[order_numbers.back()]=='b'){
+        back = to_string(Priceperstock[order_numbers.back()]) + " b";
+    }else{
+        back = to_string(-1*Priceperstock[order_numbers.back()]) + " s";
+    }
+    string current_order = orders[order_numbers.back()].substr(0,orders[order_numbers.back()].size()-back.size());
     order_numbers.pop_back();
     for(auto i : order_numbers){
-        string s = orders[order_numbers[i]].substr(0,orders[order_numbers[i]].size()-1);
+    if(type[i]=='b'){
+        back = to_string(Priceperstock[i]) + " b";
+    }else{
+        back = to_string(-1*Priceperstock[i]) + " s";
+    }    
+    string s = orders[i].substr(0,orders[i].size()-back.size());    
         if(s==current_order){
             return true;
         }
@@ -173,6 +185,14 @@ void process_raworder(string order, vector<pair<string,int>> &QuantityCounter, i
 
 void process_order(string order,vector<pair<string,int>> &Quantitycounter,vector<int> &Totalpricecounter){
 
+    int X = 0;
+    while(order[X]!='\0'){
+        if(order[X]==' ' && order[X+1]==' '){
+            order.erase(order.begin()+X);
+            X--;
+        }
+        X++;
+    }
     string counter = order;     // Store a counter of the order
     int i = 0;                  // Index
     int j = 0;                 
@@ -243,32 +263,40 @@ bool is_there_cancellation(int i1, char type1,  int i2, char type2, vector<vecto
         for(int i = 0 ; i < All_quantites[i1].size() ; i++){
             if(All_quantites[i1][i].first!=All_quantites[i2][i].first || All_quantites[i1][i].second+All_quantites[i2][i].second!=0){ return false; }
         }
-        int f_er,s_er;
-        for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==i1){f_er=i;break;}}
-        popRandomElement(order_numbers,f_er);
-        for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==i2){s_er=i;break;}}
-        popRandomElement(order_numbers,s_er);
+        // int f_er,s_er;
+        // for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==i1){f_er=i;break;}}
+        // popRandomElement(order_numbers,f_er);
+        // for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==i2){s_er=i;break;}}
+        // popRandomElement(order_numbers,s_er);
+        order_numbers.erase(remove(order_numbers.begin(),order_numbers.end(),i1),order_numbers.end());
+        order_numbers.erase(remove(order_numbers.begin(),order_numbers.end(),i2),order_numbers.end());
         return true; 
     }
     if(All_quantites[i1]!=All_quantites[i2]){ return false; }
     if(type1=='b' && type2=='b'){
-        if(Priceperstock[i1] > Priceperstock[i2]){int x;
-        for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==i2){x=i;break;}}
-        popRandomElement(order_numbers,x);   
-        }else{int x;
-        for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==i1){x=i;break;}}
-        popRandomElement(order_numbers,x);      
+        if(Priceperstock[i1] >= Priceperstock[i2]){
+        // int x;
+        // for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==i2){x=i;break;}}
+        // popRandomElement(order_numbers,x);   
+        order_numbers.erase(remove(order_numbers.begin(),order_numbers.end(),i2),order_numbers.end());
+        }else{
+        // int x;
+        // for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==i1){x=i;break;}}
+        // popRandomElement(order_numbers,x);
+        order_numbers.erase(remove(order_numbers.begin(),order_numbers.end(),i1),order_numbers.end());        
         }
     }
     if(type1=='s' && type2=='s'){
         if(Priceperstock[i1] > Priceperstock[i2]){
-        int x;
-        for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==i1){x=i;break;}}
-        popRandomElement(order_numbers,x);      
+        // int x;
+        // for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==i1){x=i;break;}}
+        // popRandomElement(order_numbers,x);    
+        order_numbers.erase(remove(order_numbers.begin(),order_numbers.end(),i1),order_numbers.end());  
         }else{
-        int x;
-        for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==i2){x=i;break;}}
-        popRandomElement(order_numbers,x);      
+        // int x;
+        // for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==i2){x=i;break;}}
+        // popRandomElement(order_numbers,x);   
+        order_numbers.erase(remove(order_numbers.begin(),order_numbers.end(),i2),order_numbers.end());
         }
     }
     return true; 
@@ -276,9 +304,10 @@ bool is_there_cancellation(int i1, char type1,  int i2, char type2, vector<vecto
 }
 
 vector<int> check_arbitrage(vector<int> &order_numbers, vector<vector<pair<string,int>>> All_quantites, vector<int> Priceperstock,vector<char> type, vector<string> orders){
-    // bool ans1 = cancellation_predictor(order_numbers,orders);
-    // bool ans2 = arbitrage_predictor(order_numbers,All_quantites,Priceperstock);
-    // if(!ans1&&!ans2){ return {}; }
+    bool ans1 = cancellation_predictor(order_numbers,orders,Priceperstock,type);
+    bool ans2 = arbitrage_predictor(order_numbers,All_quantites,Priceperstock);
+    if(!ans1&&!ans2){ return {}; }
+    cout<<ans1<<" "<<ans2<<endl;
     string current_string = "";
     vector<int> arbitrage;
     int k = 0;
@@ -512,15 +541,13 @@ int main(int argc, char* argv[]) {
 
                 for(int i = arbitrage_order_numbers.size()-1 ; i >=0 ; i--){
                     if(type[arbitrage_order_numbers[i]]=='b'){
-                        for(auto it : All_quantites[arbitrage_order_numbers[i]]){
-                            cout<<it.first<<" "<<it.second<<" ";
-                        }
+                        string back = to_string(Priceperstock[arbitrage_order_numbers[i]]) + " b";
+                        cout<<orders[arbitrage_order_numbers[i]].substr(0,orders[arbitrage_order_numbers[i]].size()-back.size()); 
                         cout<<Priceperstock[arbitrage_order_numbers[i]]<<" "<<"s"<<endl;
                         Overall_profit += Priceperstock[arbitrage_order_numbers[i]];
                     }else{
-                        for(auto it : All_quantites[arbitrage_order_numbers[i]]){
-                            cout<<it.first<<" "<<-1*it.second<<" ";
-                        }
+                        string back = to_string(Priceperstock[arbitrage_order_numbers[i]]) + " s";
+                        cout<<orders[arbitrage_order_numbers[i]].substr(0,orders[arbitrage_order_numbers[i]].size()-back.size()); 
                         cout<<-1*Priceperstock[arbitrage_order_numbers[i]]<<" "<<"b"<<endl;
                         Overall_profit += Priceperstock[arbitrage_order_numbers[i]];
                     }
@@ -550,12 +577,14 @@ int main(int argc, char* argv[]) {
         vector<int> Priceperstock;
         vector<char> type;
         vector<int> Quantity;
+        vector<int> PrintQuantity;
         vector<int> order_numbers;
         int quantity = 0;
         for(auto it : orders){
             type.push_back(it[it.size()-1]);
             process_raworder(it,QuantityCounter,quantity, Priceperstock);
             Quantity.push_back(quantity);
+            PrintQuantity.push_back(quantity);
             mergeSortpairs(QuantityCounter,0,QuantityCounter.size()-1);
             All_quantites.push_back(QuantityCounter);
             QuantityCounter.clear();
@@ -570,22 +599,20 @@ int main(int argc, char* argv[]) {
             else{
                 for(int i = arbitrage_order_numbers.size()-1 ; i >=0 ; i--){
                     if(type[arbitrage_order_numbers[i].first]=='b'){
-                        for(auto it : All_quantites[arbitrage_order_numbers[i].first]){
-                            cout<<it.first<<" "<<it.second<<" ";
-                        }
+                        string back = to_string(Priceperstock[arbitrage_order_numbers[i].first]) + " " + to_string(PrintQuantity[arbitrage_order_numbers[i].first]) + " b";
+                        cout<<orders[arbitrage_order_numbers[i].first].substr(0,orders[arbitrage_order_numbers[i].first].size()-back.size()); 
                         cout<<Priceperstock[arbitrage_order_numbers[i].first]<<" "<< arbitrage_order_numbers[i].second<<" s"<<endl;
                         Overall_profit += Priceperstock[arbitrage_order_numbers[i].first]*arbitrage_order_numbers[i].second;
                     }else{
-                        for(auto it : All_quantites[arbitrage_order_numbers[i].first]){
-                            cout<<it.first<<" "<<-1*it.second<<" ";
-                        }
+                        string back = to_string(-1*Priceperstock[arbitrage_order_numbers[i].first]) + " " + to_string(PrintQuantity[arbitrage_order_numbers[i].first]) + " s";
+                        cout<<orders[arbitrage_order_numbers[i].first].substr(0,orders[arbitrage_order_numbers[i].first].size()-back.size()); 
                         cout<<-1*Priceperstock[arbitrage_order_numbers[i].first]<<" "<<arbitrage_order_numbers[i].second<<" b"<<endl;
                         Overall_profit += Priceperstock[arbitrage_order_numbers[i].first]*arbitrage_order_numbers[i].second;
                     }
                     if(Quantity[arbitrage_order_numbers[i].first]==arbitrage_order_numbers[i].second){
-                int x;
-                for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==arbitrage_order_numbers[i].first){x=i;break;}}
-                popRandomElement(order_numbers,x);   
+                        int x;
+                        for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==arbitrage_order_numbers[i].first){x=i;break;}}
+                            popRandomElement(order_numbers,x);   
                     }
                     Quantity[arbitrage_order_numbers[i].first] -= arbitrage_order_numbers[i].second;
                 }
