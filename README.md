@@ -1,6 +1,6 @@
 # Arbitrage
 
-This is a basic implementation of arbitrage detection. An arbitrage is a situtaion in which you can gain profit without any net exchange of stocks or goods. There are 2 parts in this implemenation, First one is as follows
+This is a simple arbitrage detector. An arbitrage is a situtaion in which you can gain profit without any net exchange of stocks or goods. There are 2 versions in this implemenation, First one is as follows
 
 Consider the following example. Individual A is willing to buy the package deal of Stock of company X "minus" the Stock of company Y for 10 dollars. Individual B is willing to pay 20 dollars to buy Company Y's stock and sell Company Z's stock as a package deal. Individual C is willing to buy company Z's stock and sell company X's stock for 5 dollars. "This is the best trade deal in the history of trade deals, maybe ever." Why? If you take all three deals, you have neither bought nor sold any stock but made off with 5 dollars. This is arbitrage.
 
@@ -32,14 +32,13 @@ The output will be
 So for a given order is you haven't found any arbitrage or if the order is cancelled(will be discussed in detail later) then "No Trade" has to printed
 
 
-Now if we go deep into practical world, the package deals can also have more than 1 quantity orderd by a single trader, So now the Input will be of the form
+In the advances version, you will have quantities associated with the orders
 
 ```bash
 <stock_name_1> <quantity_1> <stock_name_2>....<quantity_n> <price> <quantity> <s/b>#
 ```
-This is called order book processing. 
 
-In this part, we will allow each order to have more than one quantity of each deal available. Additionally, we will also store the entire order book. That is, an order will come in that can have multiple stocks or stock structures to buy/sell at a particular price. For instance, ASML 1 100 10 b# is a deal to buy 10 stocks of ASML for $100/stock. Also, a buy order of ASML 1 120 10 b# will NOT cancel this order. An order of ASML 1 100 20 s# will cancel the ASML 1 100 10 b# order and be reduced to ASML 1 100 10 s#, and will NOT affect the ASML 1 120 10 b# order (another way in which our algorithm can make money).
+In this version, we will allow each order to have more than one quantity of each deal available. Additionally, we will also store the entire order book. That is, an order will come in that can have multiple stocks or stock structures to buy/sell at a particular price. For instance, ASML 1 100 10 b# is a deal to buy 10 stocks of ASML for $100/stock. Also, a buy order of ASML 1 120 10 b# will NOT cancel this order. An order of ASML 1 100 20 s# will cancel the ASML 1 100 10 b# order and be reduced to ASML 1 100 10 s#, and will NOT affect the ASML 1 120 10 b# order (another way in which our algorithm can make money).
 
 It might look very similar to previous part but there is lot more complexity here. Here there is a provision to accept partial orders. A simple example is as follows
 
@@ -63,14 +62,14 @@ Output is
 
 So clearly you can see that after this arbitrage still you have 3 A's 1 B 2 C's So thery can be used in future arbitrages.
 
-This covers most of the problem statement, but to get a clear idea about the cancellation rules, you can refer to the pdf I have shared, which gives you a more clear idea of what you have to implement in your code.
+This covers most of the problem statement, but to get a clear idea about the cancellation rules, you can refer to the README files of both Basic and Advanced Version, these give you a more clear idea of what how these work.
 
 # Challenges
 
 After you go through the problem statement thouroghly you will understand that it is not very trival, following are some challenges which you might face
 * How to identify the arbitrage, more precisely, how will you check all possiblities and detect an arbitrge.
-* How will you deal with both cancellation and arbitrage parallelly, Especially in part2 you might encounter cases where some part of the order is cancelled and some part is involved in an arbitrage.
-* How will you improve the time complexity, rather how will you improve the average case?? You have to write your algorithm in such a way that it can atleast detect some waste iterations(those ones in which there is no scope of finding an arbitrage). 
+* How will you deal with both cancellation and arbitrage parallelly, Especially in Advanced version you might encounter cases where some part of the order is cancelled and some part is involved in an arbitrage.
+* How will you improve the time complexity, rather how will you improve the average case?? You have to write your algorithm in such a way that it can atleast detect some waste iterations(those ones in which there is no scope of finding an arbitrage) and make the trading decision as soon as possible.
 
 These are some very common challenges which you face while writing this code, 
-there will be many morw challenges while debugging and writing the algorithm.
+there will be many more challenges while debugging and writing the algorithm.
