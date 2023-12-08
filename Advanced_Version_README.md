@@ -11,4 +11,4 @@
 * Suppose you do not trade on a valid order, then print "No Trade" and this order will be added to the list of active orders corresponding to this stock structure.
 * Move on to the next order. Follow the instructions for each order until the last.
 * Note: If A 1 100 3 b and  A 1 100 2 b are both active orders, then donot add them up to make A 1 100 5 b, because these are orders placed by 2 different persons, So you have to treat the as INDEPENDENT orders.
-
+* Remember you have to do some error handling also, your code should not crash because of changes in spaces, extra gaps between line. Also figure out how to take the entire input from readIML, though I have given the implementation, try to figure out when is the input breaking.
