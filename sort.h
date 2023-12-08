@@ -6,8 +6,6 @@ using namespace std;
 void mergepairs(vector<pair<string, int>>& arr, int l, int m, int r) {
     int n1 = m - l + 1;
     int n2 = r - m;
-
-    // Create temporary vectors
     vector<pair<string, int>> L(n1), R(n2);
 
     // Copy data to temporary vectors L[] and R[]
