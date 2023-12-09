@@ -74,6 +74,29 @@ After you go through the problem statement thouroghly you will understand that i
 These are some very common challenges which you face while writing this code, 
 there will be many more challenges while debugging and writing the algorithm.
 
+# Run Instructions
+ For the Basic Version
+ * Copy your input into data2.txt given in inputs folder
+ * Run the following command on terminal
+ ```bash
+ make runpart2
+ ```
+ * Your ouput will be displayed in output.txt
+For the Advanced Version
+* Copy your input into data3.txt given in inputs folder
+* Run the following command
+```bash
+make runpart3
+```
+* Your output will be displayed in output.txt
+
+# Port issue Handling
+Remeber for the basic version the time complexity if O(2^n) and for advanced version time complexity is O((q1+1)(q2+1)(q3+1)....(qn+1)). So basically it is of exponential order, So if you have ever run a program with exponential order, they will almost show no progress after n=20. So while you are testing, if the execution has not yet completed, but you want to run some other test case, then just change the port number in receiver.h and iml.cpp .
+```bash
+const int PORT = 8888;
+```
+You can choose other ports like 8888,8889,8881,etc.. 
+
 # Project
 * This implemenation was a part of my DSA project.
 * You can also implement this code using your own algorithm and take my code as a refernce, you can even find a better algo than mine :)
