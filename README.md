@@ -99,5 +99,5 @@ You can choose other ports like 8888,8889,8881,etc..
 
 # Project
 * This implemenation was a part of my DSA project.
-* You can also implement this code using your own algorithm and take my code as a refernce, you can even find a better algo than mine :)
+* You can also implement this code using your own algorithm and take my code as a refernce. Just write all your code in trader.cpp.
 * So I have also added huge number of test cases so that you can verify the correctness of your code.
