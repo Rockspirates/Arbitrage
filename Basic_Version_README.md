@@ -11,3 +11,7 @@
 * Suppose you do not trade on a valid order, then "No Trade" should be printed and this order will be added to the list of active orders corresponding to this stock structure.
 * Move on to the next order. Follow the instructions for each order until the last.
 * Remember you have to do some error handling also, your code should not crash because of changes in spaces, extra gaps between line. Also figure out how to take the entire input from readIML, though I have given the implementation, try to figure out when is the input breaking.
+
+# Instructions for those who want to write their own Arbitrage Detector
+* There are 10 testcases given in the testcase folder, These mostly cover all the corner cases, So if all the cases are passing, then your code is almost correct, but don't modify your code based on the hints, hints are given only for you to know on what basis is the testcase created. First write your entire logic properly based on the problem statement.
+* Don't just modify my code to create your own code, you will not get a feel of the project, when you write the code from scratch you will get different insight of handling big codes like around 1000 lines. So just remove all the code from trader.cpp and write your own code.
