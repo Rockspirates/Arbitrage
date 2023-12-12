@@ -242,7 +242,8 @@ void process_order(string order,vector<pair<string,int>> &Quantitycounter,vector
 }
 
 bool is_there_cancellation2(int i1, char type1,  int i2, char type2, vector<vector<pair<string,int>>> All_quantites, vector<int> Priceperstock, int q1, int q2){
-    if(type1==type2 || Priceperstock[i1]+Priceperstock[i2]!=0){ return false; }
+    if(type1==type2){ return false; }
+    if(type1!=type2 && Priceperstock[i1]+Priceperstock[i2]!=0){ return false; }
     if(All_quantites[i1].size()!=All_quantites[i2].size()){
         return false;
     }
@@ -382,9 +383,9 @@ void explorePossibilities(std::vector<int>& q, const std::vector<int>& recursive
             bool cancelledd = is_there_cancellation2(Indexes[i],type[Indexes[i]],Indexes.back(),type[Indexes.back()],local,Priceperstock, recursive_quantity[i], recursive_quantity.back());
             if(cancelledd){
                 cancelledd1 = true;
-                if(q[i]>quantities.first && q.back()>quantities.second){
-                    quantities.first = q[i];
-                    quantities.second = q.back();
+                if(q[i]>quantities.first || q.back()>quantities.second){
+                    quantities.first = max(quantities.first, min(q[i],q.back()));
+                    quantities.second = max(quantities.second, min(q[i],q.back()));
                 }
             }
         }
@@ -450,12 +451,9 @@ vector<pair<int,int>> part3_check_arbitrage(vector<vector<pair<string,int>>> All
             if(Quantity[indices.second]==quantities.second){
                 Quantity[indices.first] -= quantities.first;
                 Quantity[indices.second] -= quantities.second;
-                int x;
-                for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==indices.second){x=i;break;}}
-                popRandomElement(order_numbers,x); 
+                order_numbers.erase(remove(order_numbers.begin(),order_numbers.end(),indices.second),order_numbers.end());               
                 if(Quantity[indices.first]==0){
-                    for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==indices.first){x=i;break;}}
-                    popRandomElement(order_numbers,x);  
+                order_numbers.erase(remove(order_numbers.begin(),order_numbers.end(),indices.first),order_numbers.end());
                 }
                 cancellation = false;  
                 return {};
@@ -468,12 +466,12 @@ vector<pair<int,int>> part3_check_arbitrage(vector<vector<pair<string,int>>> All
     if(arbitrage.size()==0 && cancelledd1==true){
         Quantity[indices.first] -= quantities.first;
         Quantity[indices.second] -= quantities.second;  
-        if(Quantity[indices.first]==0){
-            int x;
-            for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==indices.first){x=i;break;}}
-            popRandomElement(order_numbers,x);                 
+        if(Quantity[indices.first]==0){ 
+            order_numbers.erase(remove(order_numbers.begin(),order_numbers.end(),indices.first),order_numbers.end());                        
         } 
     }
+    indices = {0,0};
+    quantities = {0,0};
     return arbitrage;
 }
 
@@ -558,7 +556,7 @@ int main(int argc, char* argv[]) {
             int i=0;
             string s="";
             while(message[i]!='\0'){
-            if(message[i]=='#'){i+=2;
+            if(message[i]=='#'){i+=1;
                 orders.push_back(s);
                 s="";
                 continue;}
@@ -574,18 +572,29 @@ int main(int argc, char* argv[]) {
         vector<int> PrintQuantity;
         vector<int> order_numbers;
         int quantity = 0;
-        for(auto it : orders){
+        for(int i = 0 ; i<orders.size() ;i++){
+            string it = orders[i];
             type.push_back(it[it.size()-1]);
             process_raworder(it,QuantityCounter,quantity, Priceperstock);
             Quantity.push_back(quantity);
             PrintQuantity.push_back(quantity);
+            string updated = "";
+            for(auto pt : QuantityCounter){
+                updated += pt.first; updated += " "; updated += to_string(pt.second); updated += " ";
+            }
+            updated += to_string(Priceperstock.back());
+            updated += " ";
+            updated += to_string(Quantity.back());
+            if(type.back()=='b'){ updated += " b"; orders[i] = updated; }
+            else{ updated += " s"; orders[i] = updated; }
             mergeSortpairs(QuantityCounter,0,QuantityCounter.size()-1);
             All_quantites.push_back(QuantityCounter);
             QuantityCounter.clear();
         }
-        
         int Overall_profit = 0;
-        for(int j = 0 ; j < orders.size() ; j++){
+        order_numbers.push_back(0);
+        cout<<"No Trade"<<endl;
+        for(int j = 1 ; j < orders.size() ; j++){
             maxTp = -21474;
             order_numbers.push_back(j);
             vector<pair<int,int>> arbitrage_order_numbers = part3_check_arbitrage(All_quantites,Priceperstock,type,Quantity,order_numbers);
@@ -603,18 +612,15 @@ int main(int argc, char* argv[]) {
                         cout<<-1*Priceperstock[arbitrage_order_numbers[i].first]<<" "<<arbitrage_order_numbers[i].second<<" b"<<endl;
                         Overall_profit += Priceperstock[arbitrage_order_numbers[i].first]*arbitrage_order_numbers[i].second;
                     }
-                    if(Quantity[arbitrage_order_numbers[i].first]==arbitrage_order_numbers[i].second){
-                        int x;
-                        for(int i=0;i<order_numbers.size();i++){if(order_numbers[i]==arbitrage_order_numbers[i].first){x=i;break;}}
-                            popRandomElement(order_numbers,x);   
+                    if(Quantity[arbitrage_order_numbers[i].first]==arbitrage_order_numbers[i].second){ 
+                        order_numbers.erase(remove(order_numbers.begin(),order_numbers.end(),arbitrage_order_numbers[i].first),order_numbers.end());
                     }
                     Quantity[arbitrage_order_numbers[i].first] -= arbitrage_order_numbers[i].second;
                 }
             }
             arbitrage_order_numbers.clear();  
         }
-        cout<<Overall_profit;
-
+        cout<<Overall_profit<<endl;
     }
     
     else{
