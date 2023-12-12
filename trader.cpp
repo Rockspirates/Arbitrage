@@ -46,7 +46,7 @@ bool cancellation_predictor(vector<int>order_numbers, vector<vector<pair<string,
     
 }
 
-bool arbitrage_predictor(vector<int> order_numbers, vector<vector<pair<string,int>>> All_quantities,vector<int> Priceperstock){
+bool arbitrage_predictor(vector<int> order_numbers, vector<vector<pair<string,int>>> All_quantities){
 
     vector<pair<string,bool>> Predictor ;
     for(auto it : All_quantities[order_numbers.back()]){
@@ -77,6 +77,31 @@ bool arbitrage_predictor(vector<int> order_numbers, vector<vector<pair<string,in
     return ans;
 }
 
+bool cancellation_predictor2(vector<int> order_numbers,vector<vector<pair<string,int>>> All_quantities, vector<int> Priceperstock, vector<char> type){
+    int i = order_numbers.back();
+    if(type[i] == 's'){
+        for(int j = 0; j < All_quantities[i].size() ; j++){
+            All_quantities[i][j].second *= -1;
+        }
+        Priceperstock[i] *= -1;
+    }
+    order_numbers.pop_back();
+    for(auto it : order_numbers){
+        if(type[it]!=type[i]){
+            if(type[it]=='b'){
+                if(All_quantities[i]==All_quantities[it] && Priceperstock[it]==Priceperstock[i]){ return true; }
+            }
+            else{
+                for(int j = 0; j < All_quantities[it].size() ; j++){
+                    All_quantities[it][j].second *= -1;
+                }
+                Priceperstock[it] *= -1;
+                if(All_quantities[i]==All_quantities[it] && Priceperstock[it]==Priceperstock[i]){ return true; }
+            }
+        }
+    }
+    return false;
+}
 int converter(string num){
     int i = 0;
     bool sign = true;
@@ -291,7 +316,7 @@ bool is_there_cancellation(int i1, char type1,  int i2, char type2, vector<vecto
 
 vector<int> check_arbitrage(vector<int> &order_numbers, vector<vector<pair<string,int>>> All_quantites, vector<int> Priceperstock,vector<char> type, vector<string> orders){
     bool ans1 = cancellation_predictor(order_numbers,All_quantites, type);
-    bool ans2 = arbitrage_predictor(order_numbers,All_quantites,Priceperstock);
+    bool ans2 = arbitrage_predictor(order_numbers,All_quantites);
     if(!ans1&&!ans2){ return {}; }
     string current_string = "";
     vector<int> arbitrage;
@@ -415,6 +440,9 @@ void explorePossibilities(std::vector<int>& q, const std::vector<int>& recursive
 }
 
 vector<pair<int,int>> part3_check_arbitrage(vector<vector<pair<string,int>>> All_quantites,vector<int> Priceperstock, vector<char> type, vector<int> &Quantity, vector<int> &order_numbers){
+    bool ans1 = cancellation_predictor2(order_numbers,All_quantites, Priceperstock, type);
+    bool ans2 = arbitrage_predictor(order_numbers,All_quantites);
+    if(!ans1&&!ans2){ return {}; }    
     string current_string = "";
     vector<pair<int,int>> arbitrage;
     int k = 0;
@@ -506,11 +534,21 @@ int main(int argc, char* argv[]) {
             process_order(it,QuantityCounter,Priceperstock);
             string updated = "";
             for(auto pt : QuantityCounter){
-                updated += pt.first; updated += " "; updated += to_string(pt.second); updated += " ";
-            }
-            updated += to_string(Priceperstock.back());
-            if(type.back()=='b'){ updated += " b"; orders[i] = updated; }
-            else{ updated += " s"; orders[i] = updated; }
+                if(type.back()=='b'){
+                    updated += pt.first; updated += " "; updated += to_string(pt.second); updated += " ";
+                }else{
+                    updated += pt.first; updated += " "; updated += to_string(-1*pt.second); updated += " ";
+                }            }
+            if(type.back()=='b'){ 
+                updated += to_string(Priceperstock.back());
+                updated += " ";
+                updated += " b"; 
+                orders[i] = updated; }
+            else{ 
+                updated += to_string(-1*Priceperstock.back());
+                updated += " ";
+                updated += " s"; 
+                orders[i] = updated; }
             mergeSortpairs(QuantityCounter,0,QuantityCounter.size()-1);
             All_quantites.push_back(QuantityCounter);
             QuantityCounter.clear();
@@ -580,13 +618,24 @@ int main(int argc, char* argv[]) {
             PrintQuantity.push_back(quantity);
             string updated = "";
             for(auto pt : QuantityCounter){
-                updated += pt.first; updated += " "; updated += to_string(pt.second); updated += " ";
+                if(type.back()=='b'){
+                    updated += pt.first; updated += " "; updated += to_string(pt.second); updated += " ";
+                }else{
+                    updated += pt.first; updated += " "; updated += to_string(-1*pt.second); updated += " ";
+                }
             }
-            updated += to_string(Priceperstock.back());
-            updated += " ";
-            updated += to_string(Quantity.back());
-            if(type.back()=='b'){ updated += " b"; orders[i] = updated; }
-            else{ updated += " s"; orders[i] = updated; }
+            if(type.back()=='b'){ 
+                updated += to_string(Priceperstock.back());
+                updated += " ";
+                updated += to_string(Quantity.back());
+                updated += " b"; 
+                orders[i] = updated; }
+            else{ 
+                updated += to_string(-1*Priceperstock.back());
+                updated += " ";
+                updated += to_string(Quantity.back());
+                updated += " s"; 
+                orders[i] = updated; }
             mergeSortpairs(QuantityCounter,0,QuantityCounter.size()-1);
             All_quantites.push_back(QuantityCounter);
             QuantityCounter.clear();
@@ -628,8 +677,5 @@ int main(int argc, char* argv[]) {
         std::cout<<"wrong argument";
         return 0;
     }
-    
+
 }
-
-
-
