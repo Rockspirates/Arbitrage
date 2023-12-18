@@ -11,4 +11,4 @@ Z 1 X -1 5 s
 30
 
 Hint: You should also write some basic error handling like ignoring the gaps.
-Your code should not crash sue to these gaps, try to be practical :)
+Your code should not crash due to these gaps, try to be practical :)
