@@ -65,7 +65,6 @@ So clearly you can see that after this arbitrage still you have 3 A's 1 B 2 C's 
 This covers most of the problem statement, but to get a clear idea about the cancellation rules, you can refer to the README files of both Basic and Advanced Version, these give you a more clear idea of what how these work.
 
 # Challenges
-
 After you go through the problem statement thouroghly you will understand that it is not very trival, following are some challenges which you might face
 * How to identify the arbitrage, more precisely, how will you check all possiblities and detect an arbitrge.
 * How will you deal with both cancellation and arbitrage parallelly, Especially in Advanced version you might encounter cases where some part of the order is cancelled and some part is involved in an arbitrage.
@@ -81,7 +80,7 @@ there will be many more challenges while debugging and writing the algorithm.
  ```bash
  make runpart2
  ```
- * Your ouput will be displayed in output.txt
+ * Your output will be displayed in output.txt
 For the Advanced Version
 * Copy your input into data3.txt given in inputs folder
 * Run the following command
@@ -91,13 +90,15 @@ make runpart3
 * Your output will be displayed in output.txt
 
 # Port issue Handling
-Remeber for the basic version the time complexity if O(2^n) and for advanced version time complexity is O((q1+1)(q2+1)(q3+1)....(qn+1)). So basically it is of exponential order, So if you have ever run a program with exponential order, they will almost show no progress after n=20. So while you are testing, if the execution has not yet completed, but you want to run some other test case, then just change the port number in receiver.h and iml.cpp .
+Remember for the basic version the time complexity if O(2^n) and for advanced version time complexity is O((q1+1)(q2+1)(q3+1)....(qn+1)). So basically it is of exponential order. So while you are testing, if the execution has not yet completed, but you want to run some other test case, then just change the port number in receiver.h and iml.cpp .
 ```bash
 const int PORT = 8888;
 ```
 You can choose other ports like 8888,8889,8881,etc.. 
-
-# Project
-* This implemenation was a part of my DSA project.
-* You can also implement this code using your own algorithm and take my code as a refernce. Just write all your code in trader.cpp.
-* So I have also added huge number of test cases so that you can verify the correctness of your code.
+Or you can kill the current process 
+```bash
+lsof -i :8888 // this will help to find the PID for process running in port 8888
+```
+```bash
+kill -9 <PID> // Then kill the process
+```
